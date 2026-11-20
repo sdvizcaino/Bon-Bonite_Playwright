@@ -1,0 +1,25 @@
+{
+  "name": "bonbonite-playwright",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Pruebas E2E de bon-bonite.com con Playwright + TypeScript + Page Object Model",
+  "scripts": {
+    "test": "playwright test",
+    "test:registro": "playwright test --grep @registro",
+    "test:datos": "playwright test --grep @datos",
+    "test:compra": "playwright test --grep @compra",
+    "test:headed": "playwright test --headed",
+    "report": "playwright show-report",
+    "typecheck": "tsc --noEmit"
+  },
+  "engines": {
+    "node": ">=22"
+  },
+  "devDependencies": {
+    "@faker-js/faker": "10.6.0",
+    "@playwright/test": "1.63.0",
+    "@types/node": "22.19.1",
+    "dotenv": "17.2.3",
+    "typescript": "5.9.3"
+  }
+}
