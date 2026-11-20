@@ -81,5 +81,8 @@ El workflow `.github/workflows/playwright.yml` se ejecuta en cada `push` o pull 
 
 ## Hallazgos durante la automatización
 
-- En el checkout, el botón flotante de WhatsApp queda encima del checkbox "Autorizo el tratamiento de mis datos personales" y puede interceptar el clic. El test lo maneja y además verifica explícitamente que el checkbox quede marcado.
-- El texto "Regístrate" de `/mi-cuenta` no es un enlace (`<a>`), sino un texto con clic, lo que afecta la accesibilidad del flujo de registro.
+| ID | Módulo | Severidad | Descripción |
+|---|---|---|---|
+| HAL-01 | Checkout | Media | El botón flotante de WhatsApp se superpone al checkbox "Autorizo el tratamiento de mis datos personales" y puede interceptar el clic. Un usuario puede creer que lo marcó y la orden no avanza. |
+| HAL-02 | Checkout | Baja | Sin sesión iniciada, el resumen de Finalizar compra indica "IVA estimado para el/la/los Estados Unidos (EEUU)" en un sitio colombiano. |
+| HAL-03 | Mi cuenta | Baja | Tras registrarse aparece "Confirma tu dirección de correo electrónico", pero el usuario puede operar sin confirmar; conviene validar si es la regla de negocio esperada. |
