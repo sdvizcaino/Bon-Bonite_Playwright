@@ -1,10 +1,11 @@
-import { test, expect } from '@playwright/test';
+import { test, expect } from '../fixtures/evidence';
 import { AccountPage } from '../pages/AccountPage';
 import { MyAccountPage } from '../pages/MyAccountPage';
 import { createUser } from '../utils/dataFactory';
+import { highlight, takeEvidence } from '../utils/evidence';
 
 test.describe('ESC-01 · Registro de usuario', () => {
-  test('un visitante se registra con datos válidos y entra a Mi cuenta @registro', async ({ page }) => {
+  test('un visitante se registra con datos válidos y entra a Mi cuenta @registro', async ({ page }, testInfo) => {
     const user = createUser();
     const accountPage = new AccountPage(page);
     const myAccountPage = new MyAccountPage(page);
@@ -13,10 +14,13 @@ test.describe('ESC-01 · Registro de usuario', () => {
       await accountPage.goto();
       await accountPage.openRegisterForm();
       await expect(accountPage.registerTitle).toBeVisible();
+      await takeEvidence(page, testInfo, 'formulario_registro');
     });
 
     await test.step('Registrar un usuario nuevo con datos Faker', async () => {
-      await accountPage.register(user);
+      await accountPage.fillRegisterForm(user);
+      await takeEvidence(page, testInfo, 'formulario_registro_lleno', true);
+      await accountPage.submitRegisterForm();
     });
 
     await test.step('Verificar que entra a Mi cuenta con su nombre', async () => {
@@ -26,7 +30,9 @@ test.describe('ESC-01 · Registro de usuario', () => {
       await expect(myAccountPage.detailsTab).toBeVisible();
       await expect(myAccountPage.creditsTab).toBeVisible();
       await expect(myAccountPage.pqrsTab).toBeVisible();
-      await page.screenshot({ path: 'evidencias/ESC-01_registro_OK.png', fullPage: false });
+      await highlight(myAccountPage.greeting);
+      await highlight(myAccountPage.accountNav);
+      await takeEvidence(page, testInfo, 'mi_cuenta_registro_OK');
     });
   });
 });

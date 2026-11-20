@@ -1,4 +1,5 @@
 import { Locator, Page } from '@playwright/test';
+import { highlight } from '../utils/evidence';
 
 /** Listado de productos de una categoría (por ejemplo, Bolsos). */
 export class CategoryPage {
@@ -17,6 +18,7 @@ export class CategoryPage {
   }
 
   async openFirstProduct(): Promise<void> {
+    await highlight(this.productLinks.first());
     await this.productLinks.first().click();
     await this.page.waitForURL('**/producto/**');
   }

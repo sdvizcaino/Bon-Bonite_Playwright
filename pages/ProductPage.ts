@@ -1,4 +1,5 @@
 import { Locator, Page } from '@playwright/test';
+import { highlight } from '../utils/evidence';
 
 /** Detalle de un producto. */
 export class ProductPage {
@@ -19,6 +20,7 @@ export class ProductPage {
   }
 
   async addToCart(): Promise<void> {
+    await highlight(this.addToCartButton);
     await this.addToCartButton.click();
   }
 }

@@ -1,4 +1,5 @@
 import { Locator, Page } from '@playwright/test';
+import { highlight } from '../utils/evidence';
 
 export interface PersonalData {
   firstName: string;
@@ -37,12 +38,20 @@ export class AccountDetailsPage {
     await this.page.goto('/mi-cuenta/edit-account/');
   }
 
-  /** Activa la edición, cambia nombre, apellido y teléfono, y guarda. */
-  async updatePersonalData(data: PersonalData): Promise<void> {
+  /** Activa la edición y cambia nombre, apellido y teléfono (sin guardar). */
+  async editPersonalData(data: PersonalData): Promise<void> {
+    await highlight(this.updateInfoButton);
     await this.updateInfoButton.click();
+    await highlight(this.firstNameInput);
     await this.firstNameInput.fill(data.firstName);
+    await highlight(this.lastNameInput);
     await this.lastNameInput.fill(data.lastName);
+    await highlight(this.phoneInput);
     await this.phoneInput.fill(data.phone);
+  }
+
+  async save(): Promise<void> {
+    await highlight(this.saveButton);
     await this.saveButton.click();
   }
 }

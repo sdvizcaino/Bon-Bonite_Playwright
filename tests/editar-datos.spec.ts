@@ -1,12 +1,13 @@
-import { test, expect } from '@playwright/test';
+import { test, expect } from '../fixtures/evidence';
 import { AccountPage } from '../pages/AccountPage';
 import { MyAccountPage } from '../pages/MyAccountPage';
 import { AccountDetailsPage } from '../pages/AccountDetailsPage';
 import { createPhone, createUser } from '../utils/dataFactory';
 import { faker } from '@faker-js/faker';
+import { highlight, takeEvidence } from '../utils/evidence';
 
 test.describe('ESC-02 · Modificar datos del usuario', () => {
-  test('un usuario registrado actualiza nombre, apellido y teléfono @datos', async ({ page }) => {
+  test('un usuario registrado actualiza nombre, apellido y teléfono @datos', async ({ page }, testInfo) => {
     const user = createUser();
     const newData = {
       firstName: faker.person.firstName(),
@@ -24,15 +25,20 @@ test.describe('ESC-02 · Modificar datos del usuario', () => {
     await test.step('Ir a la pestaña Datos', async () => {
       await myAccountPage.goToDetails();
       await expect(detailsPage.personalDataCard).toContainText(user.firstName);
-      await page.screenshot({ path: 'evidencias/ESC-02_datos_antes.png' });
+      await highlight(detailsPage.personalDataCard);
+      await takeEvidence(page, testInfo, 'datos_antes');
     });
 
     await test.step('Actualizar nombre, apellido y teléfono y guardar', async () => {
-      await detailsPage.updatePersonalData(newData);
+      await detailsPage.editPersonalData(newData);
+      await takeEvidence(page, testInfo, 'datos_editados_antes_de_guardar');
+      await detailsPage.save();
     });
 
     await test.step('Verificar que se muestran los nuevos datos', async () => {
       await expect(detailsPage.successMessage).toBeVisible();
+      await highlight(detailsPage.successMessage);
+      await takeEvidence(page, testInfo, 'datos_guardados');
       await expect(detailsPage.personalDataCard).toContainText(newData.firstName);
       await expect(detailsPage.personalDataCard).toContainText(newData.lastName);
       await expect(detailsPage.personalDataCard).toContainText(newData.phone);
@@ -43,7 +49,8 @@ test.describe('ESC-02 · Modificar datos del usuario', () => {
       await expect(detailsPage.personalDataCard).toContainText(newData.firstName);
       await expect(detailsPage.personalDataCard).toContainText(newData.lastName);
       await expect(detailsPage.personalDataCard).toContainText(newData.phone);
-      await page.screenshot({ path: 'evidencias/ESC-02_datos_actualizados_OK.png' });
+      await highlight(detailsPage.personalDataCard);
+      await takeEvidence(page, testInfo, 'datos_actualizados_tras_recargar_OK');
     });
   });
 });

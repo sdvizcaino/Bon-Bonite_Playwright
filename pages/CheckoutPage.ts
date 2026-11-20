@@ -1,5 +1,6 @@
 import { expect, Locator, Page } from '@playwright/test';
 import { BillingData } from '../utils/dataFactory';
+import { highlight } from '../utils/evidence';
 
 /** Finalizar compra (/finalizar-compra/): Carrito → Ingreso → Facturación → Pago. */
 export class CheckoutPage {
@@ -52,7 +53,9 @@ export class CheckoutPage {
   }
 
   async continueToNextStep(): Promise<void> {
-    await this.continueButton.locator('visible=true').first().click();
+    const button = this.continueButton.locator('visible=true').first();
+    await highlight(button);
+    await button.click();
   }
 
   /** Espera a que desaparezca el overlay de carga del checkout de WooCommerce. */
@@ -63,12 +66,20 @@ export class CheckoutPage {
 
   /** Llena los campos de facturación que no vienen precargados del registro. */
   async fillBilling(data: BillingData): Promise<void> {
+    await highlight(this.phoneInput);
     await this.phoneInput.fill(data.phone);
+    // Las listas usan select2: el sitio redibuja la caja al elegir una opción,
+    // por eso el recuadro rojo se pone después de seleccionar.
     await this.countrySelect.selectOption('CO');
+    await highlight(this.countrySelect);
     // select2 oculta el <select> original; se elige la opción directamente sobre él.
     await this.stateSelect.selectOption({ label: data.state }, { force: true });
+    await highlight(this.stateSelect);
     await this.citySelect.selectOption({ label: data.city }, { force: true });
+    await highlight(this.citySelect);
+    await highlight(this.addressInput);
     await this.addressInput.fill(data.address);
+    await highlight(this.postcodeInput);
     await this.postcodeInput.fill(data.postcode);
     // Al cambiar la dirección, WooCommerce recarga el resumen del pedido por AJAX
     // (muestra un overlay .blockUI) y vuelve a dibujar el checkbox. Se espera a que termine.
@@ -76,5 +87,7 @@ export class CheckoutPage {
     // El botón flotante de WhatsApp queda encima del checkbox y "roba" el clic,
     // por eso se envía el evento click directamente al checkbox.
     await this.termsCheckbox.dispatchEvent('click');
+    // El AJAX redibuja esta zona, por eso el recuadro se pone después de marcar.
+    await highlight(this.termsCheckbox);
   }
 }

@@ -1,5 +1,6 @@
 import { Locator, Page } from '@playwright/test';
 import { TestUser } from '../utils/dataFactory';
+import { highlight } from '../utils/evidence';
 
 /** Página /mi-cuenta sin sesión: formularios de inicio de sesión y de registro. */
 export class AccountPage {
@@ -48,20 +49,38 @@ export class AccountPage {
 
   /** Abre el formulario "Regístrate · Crea tu cuenta". */
   async openRegisterForm(): Promise<void> {
+    await highlight(this.registerLink.first());
     await this.registerLink.first().click();
     await this.registerTitle.waitFor({ state: 'visible' });
   }
 
+  /** Llena el formulario de registro (sin enviarlo). */
+  async fillRegisterForm(user: TestUser): Promise<void> {
+    await highlight(this.cedulaInput);
+    await this.cedulaInput.fill(user.cedula);
+    await highlight(this.firstNameInput);
+    await this.firstNameInput.fill(user.firstName);
+    await highlight(this.lastNameInput);
+    await this.lastNameInput.fill(user.lastName);
+    await highlight(this.emailInput);
+    await this.emailInput.fill(user.email);
+    await highlight(this.passwordInput);
+    await this.passwordInput.fill(user.password);
+    await highlight(this.confirmPasswordInput);
+    await this.confirmPasswordInput.fill(user.password);
+    await highlight(this.privacyPolicyCheckbox);
+    await this.privacyPolicyCheckbox.check({ force: true });
+  }
+
+  async submitRegisterForm(): Promise<void> {
+    await highlight(this.registerButton);
+    await this.registerButton.click();
+  }
+
   /** Llena y envía el formulario de registro. */
   async register(user: TestUser): Promise<void> {
-    await this.cedulaInput.fill(user.cedula);
-    await this.firstNameInput.fill(user.firstName);
-    await this.lastNameInput.fill(user.lastName);
-    await this.emailInput.fill(user.email);
-    await this.passwordInput.fill(user.password);
-    await this.confirmPasswordInput.fill(user.password);
-    await this.privacyPolicyCheckbox.check({ force: true });
-    await this.registerButton.click();
+    await this.fillRegisterForm(user);
+    await this.submitRegisterForm();
   }
 
   /**
@@ -76,8 +95,11 @@ export class AccountPage {
   }
 
   async login(cedula: string, password: string): Promise<void> {
+    await highlight(this.loginCedulaInput);
     await this.loginCedulaInput.fill(cedula);
+    await highlight(this.loginPasswordInput);
     await this.loginPasswordInput.fill(password);
+    await highlight(this.loginButton);
     await this.loginButton.click();
   }
 }

@@ -1,4 +1,5 @@
 import { Locator, Page } from '@playwright/test';
+import { highlight } from '../utils/evidence';
 
 /** Mi cuenta con sesión iniciada (/mi-cuenta/orders/): saludo y pestañas. */
 export class MyAccountPage {
@@ -22,6 +23,7 @@ export class MyAccountPage {
   }
 
   async goToDetails(): Promise<void> {
+    await highlight(this.detailsTab);
     await this.detailsTab.click();
     await this.page.waitForURL('**/mi-cuenta/edit-account/');
   }
